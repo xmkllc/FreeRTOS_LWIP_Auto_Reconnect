@@ -1,3 +1,6 @@
+/*
+ * This is meant to be called after netif initialization (MX_LWIP_Init in lwip.c) when powered up.
+ */
 #include "main.h"
 #include "cmsis_os.h"
 #include "lwip.h"
