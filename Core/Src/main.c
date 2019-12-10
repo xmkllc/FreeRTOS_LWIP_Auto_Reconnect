@@ -26,7 +26,7 @@
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
 #include "task.h"
-#include "iperf_server.h"
+#include "stdio.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -48,6 +48,7 @@ osThreadId_t defaultTaskHandle;
 osTimerId_t nicMonitorTimerHandle;
 /* USER CODE BEGIN PV */
 extern struct netif gnetif;
+int timerCnt = 0;
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -95,7 +96,6 @@ int main(void)
   /* Initialize all configured peripherals */
   MX_GPIO_Init();
   /* USER CODE BEGIN 2 */
-
   /* USER CODE END 2 */
 
   osKernelInitialize();
@@ -117,6 +117,7 @@ int main(void)
 
   /* USER CODE BEGIN RTOS_TIMERS */
   /* start timers, add new ones, ... */
+  osTimerStart(nicMonitorTimerHandle, 1000);
   /* USER CODE END RTOS_TIMERS */
 
   /* USER CODE BEGIN RTOS_QUEUES */
@@ -128,7 +129,7 @@ int main(void)
   const osThreadAttr_t defaultTask_attributes = {
     .name = "defaultTask",
     .priority = (osPriority_t) osPriorityNormal,
-    .stack_size = 1024
+    .stack_size = 512
   };
   defaultTaskHandle = osThreadNew(StartDefaultTask, NULL, &defaultTask_attributes);
 
@@ -333,8 +334,6 @@ void StartDefaultTask(void *argument)
   /* init code for LWIP */
   MX_LWIP_Init();
   /* USER CODE BEGIN 5 */
-  osTimerStart(nicMonitorTimerHandle, 1000);
-//  iperf_server_init();
   /* Infinite loop */
   for(;;)
   {
@@ -348,30 +347,9 @@ void StartDefaultTask(void *argument)
 void nicMonitorCallback(void *argument)
 {
   /* USER CODE BEGIN nicMonitorCallback */
+	timerCnt++;
+//	printf("timerCnt = %d", timerCnt);
 	HAL_GPIO_TogglePin(GPIOD, LD3_Pin);
-	uint32_t phyBSR = 0;
-	HAL_ETH_ReadPHYRegister(&heth, PHY_BSR, &phyBSR);
-	if ((phyBSR & PHY_LINKED_STATUS) != PHY_LINKED_STATUS) {
-		HAL_GPIO_WritePin(GPIOD, LD5_Pin, GPIO_PIN_SET);
-
-	} else {
-		HAL_GPIO_WritePin(GPIOD, LD5_Pin, GPIO_PIN_RESET);
-		if (!netif_is_link_up(&gnetif)) {
-			HAL_ETH_ReadPHYRegister(&heth, PHY_BSR, &phyBSR);
-			if ((phyBSR & PHY_LINKED_STATUS) == PHY_LINKED_STATUS
-					&& !netif_is_link_up(&gnetif)) {
-				gnetif.flags |= NETIF_FLAG_LINK_UP;
-				netif_set_up(&gnetif);
-				dhcp_start(&gnetif);
-			}
-		}
-	}
-	if (netif_is_link_up(&gnetif)) {
-		HAL_GPIO_WritePin(GPIOD, LD6_Pin, GPIO_PIN_RESET);
-	} else {
-		// This is on only when cable is not plugged in on power up.
-		HAL_GPIO_WritePin(GPIOD, LD6_Pin, GPIO_PIN_SET);
-	}
   /* USER CODE END nicMonitorCallback */
 }
 

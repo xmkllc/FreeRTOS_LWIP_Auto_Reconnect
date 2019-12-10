@@ -26,14 +26,13 @@
 #endif /* MDK ARM Compiler */
 
 /* USER CODE BEGIN 0 */
-
+#include "eth_init_task.h"
 /* USER CODE END 0 */
 /* Private function prototypes -----------------------------------------------*/
 /* ETH Variables initialization ----------------------------------------------*/
 void Error_Handler(void);
 
 /* USER CODE BEGIN 1 */
-
 /* USER CODE END 1 */
 
 /* Variables Initialization */
@@ -43,7 +42,6 @@ ip4_addr_t netmask;
 ip4_addr_t gw;
 
 /* USER CODE BEGIN 2 */
-
 /* USER CODE END 2 */
 
 /**
@@ -51,7 +49,7 @@ ip4_addr_t gw;
   */
 void MX_LWIP_Init(void)
 {
-  /* Initilialize the LwIP stack with RTOS */
+  /* Initialize the LwIP stack with RTOS */
   tcpip_init( NULL, NULL );
 
   /* IP addresses initialization with DHCP (IPv4) */
@@ -75,18 +73,13 @@ void MX_LWIP_Init(void)
   {
     /* When the netif link is down this function must be called */
     netif_set_down(&gnetif);
+    eth_init_task_start();
   }
 
   /* Start DHCP negotiation for a network interface (IPv4) */
 //  dhcp_start(&gnetif);
 
 /* USER CODE BEGIN 3 */
-  //  const osThreadAttr_t linkTask_attributes = {
-  //      .name = "linkTask",
-  //      .priority = (osPriority_t) osPriorityNormal,
-  //      .stack_size = configMINIMAL_STACK_SIZE * 2
-  //    };
-  //  osThreadNew((osThreadFunc_t)ethernetif_set_link, &link_arg, &linkTask_attributes);
 /* USER CODE END 3 */
 }
 
