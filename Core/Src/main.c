@@ -103,8 +103,7 @@ int main(void)
   /* Initialize all configured peripherals */
   MX_GPIO_Init();
   /* USER CODE BEGIN 2 */
-  ITM_SendChar('A');
-  printf("Start cnt = %d", cnt);
+  printf("Start cnt = %d \n", cnt);
   /* USER CODE END 2 */
 
   osKernelInitialize();
@@ -126,7 +125,7 @@ int main(void)
 
   /* USER CODE BEGIN RTOS_TIMERS */
   /* start timers, add new ones, ... */
-  osTimerStart(nicMonitorTimerHandle, 1000);
+  osTimerStart(nicMonitorTimerHandle, 250);
   /* USER CODE END RTOS_TIMERS */
 
   /* USER CODE BEGIN RTOS_QUEUES */
@@ -340,13 +339,12 @@ static void MX_GPIO_Init(void)
 void StartDefaultTask(void *argument)
 {
   /* init code for LWIP */
-  MX_LWIP_Init();
+//  MX_LWIP_Init();
   /* USER CODE BEGIN 5 */
   /* Infinite loop */
   for(;;)
   {
-	  ITM_SendChar('B');
-    osDelay(100);
+    osDelay(1);
   }
   /* USER CODE END 5 */ 
 }
