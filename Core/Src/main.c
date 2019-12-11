@@ -27,6 +27,7 @@
 /* USER CODE BEGIN Includes */
 #include "task.h"
 #include "stdio.h"
+
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -48,7 +49,6 @@ osThreadId_t defaultTaskHandle;
 osTimerId_t nicMonitorTimerHandle;
 /* USER CODE BEGIN PV */
 extern struct netif gnetif;
-int timerCnt = 0;
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -63,7 +63,14 @@ void nicMonitorCallback(void *argument);
 
 /* Private user code ---------------------------------------------------------*/
 /* USER CODE BEGIN 0 */
+uint8_t cnt = 0;
 
+int _write(int file, char *ptr, int len) {
+  /* Implement your write code here, this is used by puts and printf for example */
+  for (int i = 0; i < len; i++)
+    ITM_SendChar((*ptr++));
+  return len;
+}
 /* USER CODE END 0 */
 
 /**
@@ -96,6 +103,8 @@ int main(void)
   /* Initialize all configured peripherals */
   MX_GPIO_Init();
   /* USER CODE BEGIN 2 */
+  ITM_SendChar('A');
+  printf("Start cnt = %d", cnt);
   /* USER CODE END 2 */
 
   osKernelInitialize();
@@ -319,7 +328,6 @@ static void MX_GPIO_Init(void)
 }
 
 /* USER CODE BEGIN 4 */
-
 /* USER CODE END 4 */
 
 /* USER CODE BEGIN Header_StartDefaultTask */
@@ -337,8 +345,8 @@ void StartDefaultTask(void *argument)
   /* Infinite loop */
   for(;;)
   {
-    osDelay(1);
-//    vTaskDelete(NULL);
+	  ITM_SendChar('B');
+    osDelay(100);
   }
   /* USER CODE END 5 */ 
 }
@@ -347,8 +355,8 @@ void StartDefaultTask(void *argument)
 void nicMonitorCallback(void *argument)
 {
   /* USER CODE BEGIN nicMonitorCallback */
-	timerCnt++;
-//	printf("timerCnt = %d", timerCnt);
+	cnt++;
+	printf("cnt = %d \n", cnt);
 	HAL_GPIO_TogglePin(GPIOD, LD3_Pin);
   /* USER CODE END nicMonitorCallback */
 }
