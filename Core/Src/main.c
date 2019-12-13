@@ -103,6 +103,7 @@ int main(void)
   /* Initialize all configured peripherals */
   MX_GPIO_Init();
   /* USER CODE BEGIN 2 */
+  // Needs to call printf here, otherwise it won't work later in task. Don't know why.
   printf("Start cnt = %d \n", cnt);
   /* USER CODE END 2 */
 
@@ -339,12 +340,13 @@ static void MX_GPIO_Init(void)
 void StartDefaultTask(void *argument)
 {
   /* init code for LWIP */
-//  MX_LWIP_Init();
+  MX_LWIP_Init();
   /* USER CODE BEGIN 5 */
   /* Infinite loop */
   for(;;)
   {
     osDelay(1);
+    vTaskDelete(NULL);
   }
   /* USER CODE END 5 */ 
 }
@@ -354,7 +356,7 @@ void nicMonitorCallback(void *argument)
 {
   /* USER CODE BEGIN nicMonitorCallback */
 	cnt++;
-	printf("cnt = %d \n", cnt);
+	printf("cnt = %d'; free heap: %d \n", cnt, xPortGetFreeHeapSize());
 	HAL_GPIO_TogglePin(GPIOD, LD3_Pin);
   /* USER CODE END nicMonitorCallback */
 }
