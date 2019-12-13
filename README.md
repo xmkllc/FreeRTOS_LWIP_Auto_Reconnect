@@ -23,6 +23,4 @@ https://github.com/xmkllc/STM32_LWIP_Auto_Reconnect but with FreeRTOS.
    - Add nic monitoring timer
    - defaultTaks stack size: 512
 - LWIP:
-   - LWIP_NETIF_LINK_CALLBACKS: enabled
-   - LWIP_PERF: enabled
 - LEDs:
